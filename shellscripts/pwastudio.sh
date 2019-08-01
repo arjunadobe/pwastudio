@@ -749,7 +749,7 @@ echo -e "\e[00m"
 
 
 
-cat > .env << "EOF"
+cat > env.file << EOF
 ######## PWA Studio Environment Variables ######################################
 #
 #   This file contains environment variables for a Magento PWA Studio project. 
@@ -892,7 +892,7 @@ IMAGE_SERVICE_CACHE_EXPIRES=5 minutes
 EOF
 
 
-
+mv env.file .env
 
 
 mkdir -p src
