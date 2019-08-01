@@ -1,0 +1,141 @@
+import React, { Component,Suspense } from 'react';
+import classify from 'parentSrc/classify';
+import defaultClasses from './headerlogo.css';
+import { Menu as MenuIcon, Search as SearchIcon } from 'react-feather';
+import { array, func, oneOfType, shape, string } from 'prop-types';
+import getCmsBlocks from '../../queries/getCmsBlocks.graphql';
+import Block from './block';
+import { Query,Link,resourceUrl,Route } from 'parentSrc/drivers';
+import Logo from 'src/components/Logo';
+import CartTrigger from './cartTrigger';
+import NavTrigger from './navTrigger';
+import SearchTrigger from './searchTrigger';
+import Icon from 'parentSrc/components/Icon';
+
+
+class HeaderLogo extends Component {
+    static propTypes = {
+        children: func,
+        classes: shape({
+            block: string,
+            content: string,
+            root: string,
+            shipping_img: string,
+            shipping: string,
+            col_sm_4:string,
+            header_left:string,
+            header_pwa_telphone:string,
+            pwa_shipping_detail:string,
+            header_middle:string,
+            header_middle_top:string,
+            custom_logo:string,
+            header_right:string,
+            cart_icons:string,
+            float_left:string,
+            navigation_left:string
+        }),
+        identifiers: oneOfType([string, array])
+    };
+
+
+
+    renderBlocks = ({ data, error, loading }) => {
+        const { children, classes } = this.props;
+
+
+        if (error) {
+            return <div>Data Fetch Error</div>;
+        }
+
+        if (loading) {
+            return <div>Fetching Data</div>;
+        }
+        const { items } = data.cmsBlocks;
+
+        if (!Array.isArray(items) || !items.length) {
+            return <div>There are no blocks to display</div>;
+        }
+
+        const BlockChild = typeof children === 'function' ? children : Block;
+        const blocks = items.map((item, index) => (
+            <BlockChild
+                key={item.identifier}
+                className={classes[item.identifier]}
+                index={index}
+                {...item}
+            />
+        ));
+        return <div className={classes.float_left}>{blocks}</div>;
+    };
+
+    render() {
+        const { props, renderBlocks } = this;
+        const { classes, hasBeenOffline, isOnline, searchOpen, toggleSearch } = props;
+        const searchIcon = <Icon src={SearchIcon} />;
+        const SearchBar = React.lazy(() => import('parentSrc/components/SearchBar'));
+        const rootClass = searchOpen ? classes.open : classes.closed;
+
+        const suspenseFallback = (
+            <div className={classes.searchFallback}>
+                <div className={classes.input}>
+                    <div className={classes.loader} />
+                </div>
+            </div>
+        );
+
+        return (
+            <header className={rootClass}>
+            <div className={classes.root}>
+                <div className={classes.col_sm_4+" "+classes.header_left}>
+                    <div className={classes.navigation_left}>
+                        <NavTrigger>
+                            <Icon src={MenuIcon} />
+                        </NavTrigger>
+                    </div>
+                    <div className={classes.shipping}>
+                        <div className={classes.shipping_img}></div>
+                           <Query query={getCmsBlocks} variables={{ "identifiers":["header_pwa_telphone","pwa_shipping_detail"]}}>
+                                        {renderBlocks}
+                           </Query>
+                    </div>
+                </div>
+                <div className={classes.col_sm_4 +" " +classes.header_middle}>
+                    <div className={classes.header_middle_top}>
+                        <div className={classes.custom_logo}>
+                            <Link to={resourceUrl('/')}>
+                                <Logo classes={{ logo: classes.logo }} />
+                            </Link>
+                        </div>
+                    </div>
+                </div>
+                <div className={classes.col_sm_4 +" " +classes.header_right}>
+                    <SearchTrigger
+                        searchOpen={searchOpen}
+                        toggleSearch={toggleSearch}
+                    >
+                        {searchIcon}
+                    </SearchTrigger>
+                    <div className={classes.cart_icons}>
+                         <CartTrigger />
+                    </div>
+                </div>
+            </div>
+                <div className={classes.root}>
+                    <Suspense fallback={searchOpen ? suspenseFallback : null}>
+                        <Route
+                            render={({ history, location }) => (
+                                <SearchBar
+                                    isOpen={searchOpen}
+                                    history={history}
+                                    location={location}
+                                />
+                            )}
+                        />
+                    </Suspense>
+                </div>
+            </header>
+        );
+    }
+}
+
+export default classify(defaultClasses)(HeaderLogo);
