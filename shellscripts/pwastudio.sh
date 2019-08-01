@@ -17,8 +17,6 @@ echo -e "Enter Template Name (Example - watchtime-concept) - \c"
 read templateName
 echo -e "Enter Alias Name (Example - watchtime) - \c"
 read scriptName
-echo -e "Enter MAGENTO_BACKEND_URL (Example - http://reactpwa.m2.test/) - \c"
-read backEndUrl
 echo -e "Enter Author Name - \c"
 read authorName
 echo -e "Enter Version Number (Example - 1.0.0) - \c"
@@ -749,7 +747,7 @@ echo -e "\e[00m"
 
 
 
-cat > env.file << EOF
+cat > .env << "EOF"
 ######## PWA Studio Environment Variables ######################################
 #
 #   This file contains environment variables for a Magento PWA Studio project. 
@@ -768,7 +766,7 @@ cat > env.file << EOF
 #### Connecting to a Magento store #############################################
 #
 #   Connect to an instance of Magento 2.3 by specifying its public domain name.
-MAGENTO_BACKEND_URL=$backEndUrl
+MAGENTO_BACKEND_URL=http://reactpwa.m2.test/
 #
 ################################################################################
 
@@ -892,7 +890,7 @@ IMAGE_SERVICE_CACHE_EXPIRES=5 minutes
 EOF
 
 
-mv env.file .env
+
 
 
 mkdir -p src
