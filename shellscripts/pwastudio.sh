@@ -1,16 +1,16 @@
 #!/bin/bash
 
-echo -e 
-echo -e 
-tput sgr0  
+echo -e
+echo -e
+tput sgr0
 echo -ne '\E[30;42m'
 echo -e "\033[1mSetup For Pwa Magento:\033[0m"
 echo -en '\E[5m'
 
-echo -e 
-echo -e 
+echo -e
+echo -e
 
-tput sgr0  
+tput sgr0
 echo -e "Enter Company Name (Example - adobe)   - \c"
 read companyName
 echo -e "Enter Template Name (Example - watchtime-concept) - \c"
@@ -62,11 +62,12 @@ cat > package.json << EOF
     "coveralls": "cat ./coverage/lcov.info | coveralls",
     "danger": "danger-ci",
     "lint-venia": "eslint '@(src/pwa-studio/packages|scripts)/**/{*.js,package.json}' --ignore-pattern node_modules --ignore-pattern storybook-dist",
-    "lint-$scriptName": "eslint 'src/$companyName/**/{*.js,package.json}' --ignore-pattern node_modules --ignore-pattern storybook-dist --ignore-pattern dist",
-    "postbuild": "rimraf \"./src/pwa-studio/packages/*/dist/{,**/}__*__\"",
-    "prettier-venia": "prettier --write '@(packages|scripts)/**/*.@(js|css)' '*.js'",
-    "prettier:validate-venia": "prettier-check '@(packages|scripts)/**/*.@(js|css)' '*.js'",
-    "prettier:check-venia": "prettier --list-different '@(packages|scripts)/**/*.@(js|css)' '*.js'",
+    "lint-$scriptName": "eslint '@(src|scripts)/**/{*.js,package.json}' --ignore-pattern node_modules --ignore-pattern storybook-dist --ignore-pattern dist",
+    "postbuild-venia": "rimraf \"./src/pwa-studio/packages/*/dist/{,**/}__*__\"",
+    "postbuild-watchtime":  "rimraf \"./src/$companyName/$templateName/dist/*\"",
+    "prettier-venia": "prettier --write '@(src|packages|scripts)/**/*.@(js|css)' '*.js'",
+    "prettier:validate-venia": "prettier-check '@(src|packages|scripts)/**/*.@(js|css)' '*.js'",
+    "prettier:check-venia": "prettier --list-different '@(src|packages|scripts)/**/*.@(js|css)' '*.js'",
     "prettier-$scriptName": "prettier --write 'src/$companyName/**/*.@(js|css)' '*.js'",
     "prettier-$scriptName:validate": "prettier-check 'src/$companyName/**/*.@(js|css)' '*.js'",
     "prettier-$scriptName:check": "prettier --list-different 'src/$companyName/**/*.@(js|css)' '*.js'",
@@ -241,14 +242,8 @@ wget -P /tmp/ https://raw.githubusercontent.com/magento-research/pwa-studio/deve
 cp -RP "/tmp/.npmrc" .
 
 
-
-
-
-
-
-
-echo -e 
-echo -e 
+echo -e
+echo -e
 
 echo -e "\e[1;32m"
 echo "#########################"
@@ -261,8 +256,8 @@ mkdir -p src
 
 cd src
 
-echo -e 
-echo -e 
+echo -e
+echo -e
 
 
 echo -e "\e[1;32m"
@@ -276,8 +271,8 @@ echo -e "\e[00m"
 
 git clone https://github.com/magento-research/pwa-studio.git
 
-echo -e 
-echo -e 
+echo -e
+echo -e
 
 echo -e "\e[1;32m"
 echo "#########################"
@@ -290,7 +285,7 @@ mkdir -p $companyName
 
 cd $companyName
 
-mkdir -p $templateName 
+mkdir -p $templateName
 
 cd $templateName
 
@@ -405,7 +400,7 @@ cat > package.json << EOF
     "./src/index.js",
     "./src/**/*.css"
   ]
-} 
+}
 EOF
 
 rm -rf "/tmp/.eslintignore"
@@ -423,9 +418,26 @@ wget -P /tmp/ https://raw.githubusercontent.com/magento-research/pwa-studio/deve
 cp -RP "/tmp/.gitignore" .
 
 
-rm -rf "/tmp/.graphqlconfig"
-wget -P /tmp/ https://raw.githubusercontent.com/magento-research/pwa-studio/develop/packages/venia-concept/.graphqlconfig
-cp -RP "/tmp/.graphqlconfig" .
+cat > graphqlconfig.json << EOF
+{
+    "projects": {
+        "$scriptName": {
+            "schemaPath": "lastCachedGraphQLSchema.json",
+            "extensions": {
+                "endpoints": {
+                    "default": "${env:MAGENTO_BACKEND_URL}/graphql"
+                },
+                "validate-magento-pwa-queries": {
+                    "clients": ["apollo", "literal"],
+                    "filesGlob": "src/**/*.{js,graphql,gql}"
+                }
+            }
+        }
+    }
+}
+EOF
+
+mv graphqlconfig.json .graphqlconfig
 
 
 rm -rf "/tmp/.npmignore"
@@ -768,8 +780,8 @@ echo "#########################"
 echo "# Installing yarn into your package #"
 echo "#########################"
 echo -e "\e[00m"
-echo -e 
-echo -e 
+echo -e
+echo -e
 yarn install
 
 echo -e "\e[1;32m"
@@ -777,12 +789,12 @@ echo "#########################"
 echo "# Now Building venia theme #"
 echo "#########################"
 echo -e "\e[00m"
-echo -e 
-echo -e 
+echo -e
+echo -e
 
 yarn build-venia
-echo -e 
-echo -e 
+echo -e
+echo -e
 
 
 echo -e "\e[1;32m"
@@ -790,8 +802,8 @@ echo "#########################"
 echo "# Now Building your custom theme #"
 echo "#########################"
 echo -e "\e[00m"
-echo -e 
-echo -e 
+echo -e
+echo -e
 
 yarn build-$scriptName
 
@@ -800,6 +812,6 @@ echo "#########################"
 echo "# Now Running your current theme #"
 echo "#########################"
 echo -e "\e[00m"
-echo -e 
-echo -e 
+echo -e
+echo -e
 yarn watch:$scriptName
