@@ -24,7 +24,7 @@ class Footer extends Component {
             <footer className={classes.root}>
                 <div className={classes.tile}>
                     <h2 className={classes.tileTitle}>
-                        <span>Custom Example shop</span>
+                        <span>Custom Footer Heading</span>
                     </h2>
                     <p className={classes.tileBody}>
                         <span>
@@ -44,35 +44,6 @@ class Footer extends Component {
                             Sign up and get access to our wonderful rewards
                             program.
                         </span>
-                    </p>
-                </div>
-                <div className={classes.tile}>
-                    <h2 className={classes.tileTitle}>
-                        <span>inquiries@example.com</span>
-                    </h2>
-                    <p className={classes.tileBody}>
-                        <span>
-                            Need to email us? Use the address above and
-                            we&rsquo;ll respond as soon as possible.
-                        </span>
-                    </p>
-                </div>
-                <div className={classes.tile}>
-                    <h2 className={classes.tileTitle}>
-                        <span>Live Chat</span>
-                    </h2>
-                    <p className={classes.tileBody}>
-                        <span>Mon – Fri: 5 a.m. – 10 p.m. PST</span>
-                        <br />
-                        <span>Sat – Sun: 6 a.m. – 9 p.m. PST</span>
-                    </p>
-                </div>
-                <div className={classes.tile}>
-                    <h2 className={classes.tileTitle}>
-                        <span>Help Center</span>
-                    </h2>
-                    <p className={classes.tileBody}>
-                        <span>Get answers from our community online.</span>
                     </p>
                 </div>
                 <small className={classes.copyright}>

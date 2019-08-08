@@ -3,11 +3,14 @@ import React, { Component } from 'react';
 import classify from 'parentSrc/classify';
 import defaultClasses from './topbar.css';
 import { shape, string } from 'prop-types';
+import Logo from '../Logo';
+import { Link, resourceUrl, Route } from '@magento/venia-drivers';
 
 class TopBar extends Component {
     static propTypes = {
         classes: shape({
-            root: string
+            root: string,
+            logo: string
         })
     };
 
@@ -16,7 +19,9 @@ class TopBar extends Component {
 
         return (
             <div className={classes.root}>
-                A custom react component on top of venia-concept
+                <Link to={resourceUrl('/')}>
+                    <Logo classes={{ logo: classes.logo }} />
+                </Link>
             </div>
         );
     }

@@ -6,7 +6,7 @@ import { Util, WindowSizeContextProvider } from '@magento/peregrine';
 import { Adapter } from 'parentSrc/drivers';
 import store from 'parentSrc/store';
 import app from 'parentSrc/actions/app';
-import App from 'parentComponents/App';
+import App from './components/App';
 import 'parentSrc/index.css';
 import { ToastContextProvider } from '@magento/peregrine';
 

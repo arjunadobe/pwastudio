@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
 import { bool, shape, string } from 'prop-types';
-
-import classify from 'src/classify';
+import classify from 'parentSrc/classify';
 
 //Uncomment to use venia-concept footer again
 //import Footer from 'parentComponents/Footer';
 
 import Footer from 'src/components/Footer';
 
-import Header from 'parentComponents/Header';
+import Header from '../Header';
 import TopBar from 'src/components/TopBar';
 import defaultClasses from 'parentComponents/Main/main.css';
 
