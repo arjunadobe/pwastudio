@@ -785,6 +785,15 @@ echo -e
 
 echo -e "\e[1;32m"
 echo "#########################"
+echo "# Now Adding sample modules to our custom theme #"
+echo "#########################"
+
+cd src/$companyName/$templateName
+yarn add nuka-carousel
+cd ../../../
+
+echo -e "\e[1;32m"
+echo "#########################"
 echo "# Now Building your custom theme #"
 echo "#########################"
 echo -e "\e[00m"
