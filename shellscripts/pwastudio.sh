@@ -809,6 +809,13 @@ yarn build-$scriptName
 
 echo -e "\e[1;32m"
 echo "#########################"
+echo "# Now Creating Custom Origin For your current theme #"
+echo "#########################"
+yarn buildpack create-custom-origin src/$companyName/$templateName
+
+
+echo -e "\e[1;32m"
+echo "#########################"
 echo "# Now Running your current theme #"
 echo "#########################"
 echo -e "\e[00m"
