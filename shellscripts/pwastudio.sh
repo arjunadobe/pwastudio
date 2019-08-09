@@ -470,7 +470,7 @@ cat > webpack.config.js << "EOF"
 const {
     loadEnvironment,
     WebpackTools: {
-        makeMagentoRootComponentsPlugin,
+        RootComponentsPlugin,
         ServiceWorkerPlugin,
         MagentoResolver,
         UpwardPlugin,
@@ -626,7 +626,7 @@ module.exports = async function(env = {}) {
             }
         },
         plugins: [
-            await makeMagentoRootComponentsPlugin({
+            await new RootComponentsPlugin({
                 rootComponentsDirs,
                 context: __dirname
             }),
@@ -687,34 +687,20 @@ module.exports = async function(env = {}) {
         }
     };
     if (mode === 'development') {
-        config.devtool = 'eval-source-map';
-        config.devServer = await PWADevServer.configure({
-            publicPath: config.output.publicPath,
-            graphqlPlayground: true,
-            ...projectConfig.sections(
-                'devServer',
-                'imageService',
-                'customOrigin'
-            ),
-            ...projectConfig.section('magento')
-        });
-
-        // A DevServer generates its own unique output path at startup. It needs
-        // to assign the main outputPath to this value as well.
-
-        config.output.publicPath = config.devServer.publicPath;
-
-        config.plugins.push(
-            new webpack.HotModuleReplacementPlugin(),
-            new UpwardPlugin(
-                config.devServer,
-                projectConfig.env,
-                path.resolve(
-                    __dirname,
-                    projectConfig.section('upwardJs').upwardPath
-                )
-            )
-        );
+           config.devtool = 'cheap-source-map';
+            await PWADevServer.configure(
+                {
+                    graphqlPlayground: true,
+                    ...projectConfig.sections(
+                        'devServer',
+                        'imageService',
+                        'customOrigin'
+                    ),
+                    ...projectConfig.section('magento'),
+                    upwardPath: projectConfig.section('upwardJs').upwardPath
+                },
+                config
+            );
     } else if (mode === 'production') {
         config.performance = {
             hints: 'warning'
