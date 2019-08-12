@@ -66,7 +66,7 @@ cat > package.json << EOF
     "lint-venia": "eslint '@(src/pwa-studio/packages|scripts)/**/{*.js,package.json}' --ignore-pattern node_modules --ignore-pattern storybook-dist",
     "lint-$scriptName": "eslint '@(src|scripts)/**/{*.js,package.json}' --ignore-pattern node_modules --ignore-pattern storybook-dist --ignore-pattern dist",
     "postbuild-venia": "rimraf \"./src/pwa-studio/packages/*/dist/{,**/}__*__\"",
-    "postbuild-watchtime":  "rimraf \"./src/$companyName/$templateName/dist/*\"",
+    "postbuild-$scriptName":  "rimraf \"./src/$companyName/$templateName/dist/*\"",
     "prettier-venia": "prettier --write '@(src|packages|scripts)/**/*.@(js|css)' '*.js'",
     "prettier:validate-venia": "prettier-check '@(src|packages|scripts)/**/*.@(js|css)' '*.js'",
     "prettier:check-venia": "prettier --list-different '@(src|packages|scripts)/**/*.@(js|css)' '*.js'",
@@ -86,8 +86,8 @@ cat > package.json << EOF
     "validate-queries-$scriptName": "yarn $scriptName run validate-queries",
     "watch:all-venia": "node src/pwa-studio/scripts/watch-all.js",
 	"venia": "yarn workspace @magento/venia-concept",
-	"$scriptName": "yarn workspace @adobe/watchtime-concept",
-    "watch:venia": "yarn workspace @$companyName/$templateName run watch",
+	"$scriptName": "yarn workspace @$companyName/$templateName",
+    "watch:venia": "yarn venia run watch",
     "watch:$scriptName": "yarn $scriptName run watch"
 },
   "devDependencies": {
