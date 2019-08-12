@@ -55,9 +55,9 @@ cat > package.json << EOF
   },
   "scripts": {
     "build-venia": "yarn venia run build",
-	"build:venia-dev": "yarn venia run build:dev",
+	  "build:venia-dev": "yarn venia run build:dev",
     "build-$scriptName": "yarn $scriptName run build",
-	"build:$scriptName-dev": "yarn $scriptName run build:dev",
+	  "build:$scriptName-dev": "yarn $scriptName run build:dev",
     "clean:all": "yarn workspaces run -s clean && rimraf ./node_modules && rm -rf src/ *.js *.json *.lock",
     "clone:pwa-studio": "mkdir -p src && cd src && git clone https://github.com/magento-research/pwa-studio.git",
     "clean:dist": "yarn workspaces run clean",
@@ -85,8 +85,8 @@ cat > package.json << EOF
     "validate-queries": "yarn venia run validate-queries",
     "validate-queries-$scriptName": "yarn $scriptName run validate-queries",
     "watch:all-venia": "node src/pwa-studio/scripts/watch-all.js",
-	"venia": "yarn workspace @magento/venia-concept",
-	"$scriptName": "yarn workspace @$companyName/$templateName",
+	  "venia": "yarn workspace @magento/venia-concept",
+	  "$scriptName": "yarn workspace @$companyName/$templateName",
     "watch:venia": "yarn venia run watch",
     "watch:$scriptName": "yarn $scriptName run watch"
 },
