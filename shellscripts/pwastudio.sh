@@ -55,9 +55,9 @@ cat > package.json << EOF
   },
   "scripts": {
     "build-venia": "yarn venia run build",
-	  "build:venia-dev": "yarn venia run build:dev",
+	"build:venia-dev": "yarn venia run build:dev",
     "build-$scriptName": "yarn $scriptName run build",
-	  "build:$scriptName-dev": "yarn $scriptName run build:dev",
+	"build:$scriptName-dev": "yarn $scriptName run build:dev",
     "clean:all": "yarn workspaces run -s clean && rimraf ./node_modules && rm -rf src/ *.js *.json *.lock",
     "clone:pwa-studio": "mkdir -p src && cd src && git clone https://github.com/magento-research/pwa-studio.git",
     "clean:dist": "yarn workspaces run clean",
@@ -85,13 +85,15 @@ cat > package.json << EOF
     "validate-queries": "yarn venia run validate-queries",
     "validate-queries-$scriptName": "yarn $scriptName run validate-queries",
     "watch:all-venia": "node src/pwa-studio/scripts/watch-all.js",
-	  "venia": "yarn workspace @magento/venia-concept",
-	  "$scriptName": "yarn workspace @$companyName/$templateName",
+	"venia": "yarn workspace @magento/venia-concept",
+	"$scriptName": "yarn workspace @$companyName/$templateName",
     "watch:venia": "yarn venia run watch",
     "watch:$scriptName": "yarn $scriptName run watch"
 },
   "devDependencies": {
-    "@magento/eslint-config": "~1.4.1",
+    "@magento/babel-preset-peregrine": "~2.1.0",
+    "@magento/eslint-config": "~1.4.1",  
+    "babel-eslint": "~10.0.1",
     "chalk": "~2.4.2",
     "chokidar": "~2.1.2",
     "coveralls": "~3.0.3",
@@ -118,7 +120,8 @@ cat > package.json << EOF
     "lodash.debounce": "~4.0.8",
     "prettier": "~1.16.4",
     "prettier-check": "~2.0.0",
-    "rimraf": "~2.6.3"
+    "rimraf": "~2.6.3",
+    "wait-for-expect": "~1.1.0"
   },
   "optionalDependencies": {
     "bundlesize": "~0.17.1",
@@ -700,7 +703,8 @@ module.exports = async function(env = {}) {
                         'customOrigin'
                     ),
                     ...projectConfig.section('magento'),
-                    upwardPath: projectConfig.section('upwardJs').upwardPath
+                    upwardPath:path.resolve(__dirname,projectConfig.section('upwardJs').upwardPath
+
                 },
                 config
             );
