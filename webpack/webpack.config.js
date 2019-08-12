@@ -228,7 +228,8 @@ module.exports = async function(env = {}) {
                         'customOrigin'
                     ),
                     ...projectConfig.section('magento'),
-                    upwardPath: projectConfig.section('upwardJs').upwardPath
+                    upwardPath:path.resolve(__dirname,projectConfig.section('upwardJs').upwardPath)
+
                 },
                 config
             );
