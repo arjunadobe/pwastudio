@@ -45,6 +45,7 @@ cat > package.json << EOF
     "src/pwa-studio/packages/venia-concept",
     "src/pwa-studio/packages/upward-js",
     "src/pwa-studio/packages/upward-spec",
+    "src/pwa-studio/packages/venia-ui",
     "src/$companyName/$templateName"
   ],
   "author": "$authorName",
@@ -141,11 +142,11 @@ cat > package.json << EOF
   },
   "bundlesize": [
     {
-      "path": "./src/pwa-studio/packages/venia-concept/dist/js/{client,vendor}.js",
+      "path": "./src/$companyName/$templateName/dist/js/{client,vendor}.js",
       "maxSize": "250 kB"
     },
     {
-      "path": "./src/pwa-studio/packages/venia-concept/dist/js/[0-9]-*.js",
+      "path": "./src/$companyName/$templateName/dist/js/[0-9]-*.js",
       "maxSize": "100 kB"
     }
   ]
@@ -409,20 +410,6 @@ cat > package.json << EOF
 }
 EOF
 
-rm -rf "/tmp/.eslintignore"
-wget -P /tmp/ https://raw.githubusercontent.com/magento-research/pwa-studio/develop/packages/venia-concept/.eslintignore
-cp -RP "/tmp/.eslintignore" .
-
-
-rm -rf "/tmp/.eslintrc.js"
-wget -P /tmp/ https://raw.githubusercontent.com/magento-research/pwa-studio/develop/packages/venia-concept/.eslintrc.js
-cp -RP "/tmp/.eslintrc.js" .
-
-
-rm -rf "/tmp/.gitignore"
-wget -P /tmp/ https://raw.githubusercontent.com/magento-research/pwa-studio/develop/packages/venia-concept/.gitignore
-cp -RP "/tmp/.gitignore" .
-
 
 cat > graphqlconfig.json << EOF
 {
@@ -446,24 +433,12 @@ EOF
 mv graphqlconfig.json .graphqlconfig
 
 
-rm -rf "/tmp/.npmignore"
-wget -P /tmp/ https://raw.githubusercontent.com/magento-research/pwa-studio/develop/packages/venia-concept/.npmignore
-cp -RP "/tmp/.npmignore" .
+git clone https://github.com/arjunadobe/customtemplate.git
 
+cp -rf customtemplate/* .
 
-rm -rf "/tmp/server-lambda.js"
-wget -P /tmp/ https://raw.githubusercontent.com/magento-research/pwa-studio/develop/packages/venia-concept/server-lambda.js
-cp -RP "/tmp/server-lambda.js" .
+rm -rf customtemplate
 
-
-rm -rf "/tmp/server.js"
-wget -P /tmp/ https://raw.githubusercontent.com/magento-research/pwa-studio/develop/packages/venia-concept/server.js
-cp -RP "/tmp/server.js" .
-
-
-rm -rf "/tmp/upward.yml"
-wget -P /tmp/ https://raw.githubusercontent.com/magento-research/pwa-studio/develop/packages/venia-concept/upward.yml
-cp -RP "/tmp/upward.yml" .
 
 echo -e "\e[1;32m"
 echo "#########################"
@@ -473,298 +448,74 @@ echo -e "\e[00m"
 
 
 cat > webpack.config.js << "EOF"
-const {
-    loadEnvironment,
-    WebpackTools: {
-        RootComponentsPlugin,
-        ServiceWorkerPlugin,
-        MagentoResolver,
-        UpwardPlugin,
-        PWADevServer
-    }
-} = require('@magento/pwa-buildpack');
-
-const projectConfig = loadEnvironment(__dirname);
+const { configureWebpack } = require('@magento/pwa-buildpack');
 
 const path = require('path');
 const parentTheme = path.resolve(
-    process.cwd() + '/../../pwa-studio/packages/venia-concept'
+    process.cwd() + '/../../pwa-studio/packages/venia-ui'
 );
 
-
-
-const webpack = require('webpack');
-
-const TerserPlugin = require('terser-webpack-plugin');
-const WebpackAssetsManifest = require('webpack-assets-manifest');
-
-const themePaths = {
-    images: path.resolve(__dirname, 'images'),
-    templates: path.resolve(__dirname, 'templates'),
-    src: path.resolve(__dirname, 'src'),
-    output: path.resolve(__dirname, 'dist')
-};
-
-const rootComponentsDirs = [
-    path.resolve(parentTheme, 'src/RootComponents/'),
-    './src/RootComponents/'
-];
-
-const libs = [
-    'apollo-cache-inmemory',
-    'apollo-cache-persist',
-    'apollo-client',
-    'apollo-link-context',
-    'apollo-link-http',
-    'informed',
-    'react',
-    'react-apollo',
-    'react-dom',
-    'react-feather',
-    'react-redux',
-    'react-router-dom',
-    'redux',
-    'redux-actions',
-    'redux-thunk'
-];
-
-module.exports = async function(env = {}) {
-    const mode =
-        env.mode || (projectConfig.isProd ? 'production' : 'development');
-
-    const config = {
-        mode,
-        context: __dirname, // Node global for the running script's directory
-        entry: {
-            client: path.resolve(themePaths.src, 'index.js')
-        },
-        output: {
-            path: themePaths.output,
-            publicPath: '/',
-            filename: 'js/[name].js',
-            strictModuleExceptionHandling: true,
-            chunkFilename: 'js/[name]-[chunkhash].js'
-        },
-        module: {
-            rules: [
-                {
-                    test: /\.graphql$/,
-                    exclude: /node_modules/,
-                    use: [
-                        {
-                            loader: 'graphql-tag/loader'
-                        }
-                    ]
-                },
-                {
-                    include: [themePaths.src, /peregrine/,path.resolve(parentTheme, 'src')],
-                    test: /\.(mjs|js)$/,
-                    use: [
-                        {
-                            loader: 'babel-loader',
-                            options: {
-                                cacheDirectory: true,
-                                envName: mode,
-                                rootMode: 'upward'
-                            }
-                        }
-                    ]
-                },
-                {
-                    test: /\.css$/,
-                    exclude: /node_modules/,
-                    use: [
-                        'style-loader',
-                        {
-                            loader: 'css-loader',
-                            options: {
-                                importLoaders: 1,
-                                localIdentName:
-                                    '[name]-[local]-[hash:base64:3]',
-                                modules: true
-                            }
-                        }
-                    ]
-                },
-                {
-                    test: /\.css$/,
-                    include: /node_modules/,
-                    use: [
-                        'style-loader',
-                        {
-                            loader: 'css-loader',
-                            options: {
-                                importLoaders: 1,
-                                modules: false
-                            }
-                        }
-                    ]
-                },
-                {
-                    test: /\.(jpg|svg)$/,
-                    use: [
-                        {
-                            loader: 'file-loader',
-                            options: {}
-                        }
-                    ]
-                }
-            ],
-            // TODO: Replace this with whatever future configuration Webpack
-            // will use to enforce errors on missing ES6 imports. Webpack
-            // currently logs only warnings when ES6 imports are missing, and
-            // this is the cleanest way to make those into real errors.
-            strictExportPresence: true
-        },
-        resolve: await MagentoResolver.configure({
-            paths: {
-                root: __dirname
+module.exports = async env => {
+    const config = await configureWebpack({
+        context: __dirname,
+        vendor: [
+            'apollo-cache-inmemory',
+            'apollo-cache-persist',
+            'apollo-client',
+            'apollo-link-context',
+            'apollo-link-http',
+            'informed',
+            'react',
+            'react-apollo',
+            'react-dom',
+            'react-feather',
+            'react-redux',
+            'react-router-dom',
+            'redux',
+            'redux-actions',
+            'redux-thunk'
+        ],
+        special: {
+            '@magento/peregrine': {
+                esModules: true,
+                cssModules: true
+            },
+            '@magento/venia-ui': {
+                cssModules: true,
+                esModules: true,
+                graphqlQueries: true,
+                rootComponents: true,
+                upward: true
             }
-        }),
-        resolve: {
+        },
+        env
+    });
+     config.resolve={
             modules: [__dirname, 'node_modules', parentTheme],
             mainFiles: ['index'],
             extensions: ['.mjs', '.js', '.json', '.graphql'],
             alias: {
-                parentSrc: path.resolve(parentTheme, 'src'),
-                parentComponents: path.resolve(parentTheme, 'src/components'),
-                parentQueries: path.resolve(parentTheme, 'src/queries')
+                parentSrc: path.resolve(parentTheme, 'lib'),
+                parentComponents: path.resolve(parentTheme, 'lib/components'),
+                parentQueries: path.resolve(parentTheme, 'lib/queries')
             }
-        },
-        plugins: [
-            await new RootComponentsPlugin({
-                rootComponentsDirs,
-                context: __dirname
-            }),
-            new webpack.EnvironmentPlugin(projectConfig.env),
-            new ServiceWorkerPlugin({
-                mode,
-                paths: themePaths,
-                injectManifest: true,
-                injectManifestConfig: {
-                    include: [/\.js$/],
-                    swSrc: path.resolve(parentTheme, 'src/sw.js'),
-                    swDest: 'sw.js'
-                }
-            }),
-            new WebpackAssetsManifest({
-                output: 'asset-manifest.json',
-                entrypoints: true,
-                publicPath: '/',
-                // Add explicit properties to the asset manifest for
-                // venia-upward.yml to use when evaluating app shell templates.
-                transform(assets) {
-                    // All RootComponents go to prefetch, and all client scripts
-                    // go to load.
-                    assets.bundles = {
-                        load: assets.entrypoints.client.js,
-                        prefetch: []
-                    };
-                    Object.entries(assets).forEach(([name, value]) => {
-                        if (name.startsWith('RootCmp')) {
-                            const filenames = Array.isArray(value)
-                                ? value
-                                : [value];
-                            assets.bundles.prefetch.push(...filenames);
-                        }
-                        const ext = path.extname(name);
-                        const type = ext && ext.replace(/^\./, '');
-                        if (type) {
-                            if (!assets[type]) {
-                                assets[type] = {};
-                            }
-                            assets[type][path.basename(name, ext)] = value;
-                        }
-                    });
-                }
-            })
-        ],
-        optimization: {
-            splitChunks: {
-                cacheGroups: {
-                    vendor: {
-                        test: new RegExp(
-                            `[\\\/]node_modules[\\\/](${libs.join('|')})[\\\/]`
-                        ),
-                        chunks: 'all'
-                    }
-                }
-            }
-        }
-    };
-    if (mode === 'development') {
-           config.devtool = 'cheap-source-map';
-            await PWADevServer.configure(
-                {
-                    graphqlPlayground: true,
-                    ...projectConfig.sections(
-                        'devServer',
-                        'imageService',
-                        'customOrigin'
-                    ),
-                    ...projectConfig.section('magento'),
-                    upwardPath:path.resolve(__dirname,projectConfig.section('upwardJs').upwardPath)
 
-                },
-                config
-            );
-    } else if (mode === 'production') {
-        config.performance = {
-            hints: 'warning'
-        };
-        if (projectConfig.env.DEBUG_BEAUTIFY) {
-            config.optimization.minimize = false;
-        } else {
-            config.optimization.minimizer = [
-                new TerserPlugin({
-                    parallel: true,
-                    cache: true,
-                    terserOptions: {
-                        ecma: 8,
-                        parse: {
-                            ecma: 8
-                        },
-                        compress: {
-                            drop_console: true
-                        },
-                        output: {
-                            ecma: 7,
-                            semicolons: false
-                        },
-                        keep_fnames: true
-                    }
-                })
-            ];
-        }
-    } else {
-        throw Error(`Unsupported environment mode in webpack config: ${mode}`);
-    }
+     };
+
+    // configureWebpack() returns a regular Webpack configuration object.
+    // You can customize the build by mutating the object here, as in
+    // this example:
+    config.module.noParse = [/braintree\-web\-drop\-in/];
+    // Since it's a regular Webpack configuration, the object supports the
+    // `module.noParse` option in Webpack, documented here:
+    // https://webpack.js.org/configuration/module/#modulenoparse
+
     return config;
 };
 EOF
 
 
 
-
-mkdir -p src
-
-cd src
-
-cp -R ../../../pwa-studio/packages/venia-concept/src/queries .
-
-cd ..
-
-cp -R ../../pwa-studio/packages/venia-concept/templates .
-
-git clone https://github.com/arjunadobe/pwastudio.git
-
-cp -rf pwastudio/media/ .
-
-cp -rf pwastudio/static/ .
-
-cp -rf pwastudio/src/* src/
-
-rm -rf pwastudio
 
 cd ../../../
 
