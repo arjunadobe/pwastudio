@@ -263,13 +263,20 @@ mkdir -p src
 
 cd src
 
+
+echo -e "\e[1;32m"
+echo "#########################"
+echo "# src directory was created #"
+echo "#########################"
+echo -e "\e[00m"
+
 echo -e
 echo -e
 
 
 echo -e "\e[1;32m"
 echo "#########################"
-echo "# Step 6: Cloning Pwa studio #"
+echo "# Step 6: Cloning Pwa studio into the src directory #"
 echo "#########################"
 echo -e "\e[00m"
 
@@ -283,7 +290,7 @@ echo -e
 
 echo -e "\e[1;32m"
 echo "#########################"
-echo "# Step 7: Creating Company Name and Template #"
+echo "# Step 7: Creating Company Name and Template into src directory #"
 echo "#########################"
 echo -e "\e[00m"
 
@@ -295,6 +302,31 @@ cd $companyName
 mkdir -p $templateName
 
 cd $templateName
+
+
+echo -e "\e[1;32m"
+echo "#########################"
+echo "# Step 7.1: Now cloning the sample templates from repository #"
+echo "#########################"
+echo -e "\e[00m"
+
+
+git clone https://github.com/arjunadobe/Pwatemplate.git
+
+cp -rf Pwatemplate/* .
+
+rm -rf .graphqlconfig
+
+rm -rf package.json
+
+rm -rf Pwatemplate
+
+
+echo -e "\e[1;32m"
+echo "#########################"
+echo "# Step 7.2 Creating package.json for your custom template #"
+echo "#########################"
+echo -e "\e[00m"
 
 cat > package.json << EOF
 {
@@ -411,6 +443,13 @@ cat > package.json << EOF
 EOF
 
 
+echo -e "\e[1;32m"
+echo "#########################"
+echo "# Step 7.3: Creating .graphqlconfig for your custom theme #"
+echo "#########################"
+echo -e "\e[00m"
+
+
 cat > graphqlconfig.json << EOF
 {
     "projects": {
@@ -432,12 +471,6 @@ EOF
 
 mv graphqlconfig.json .graphqlconfig
 
-
-git clone https://github.com/arjunadobe/customtemplate.git
-
-cp -rf customtemplate/* .
-
-rm -rf customtemplate
 
 
 echo -e "\e[1;32m"
@@ -513,8 +546,6 @@ module.exports = async env => {
     return config;
 };
 EOF
-
-
 
 
 cd ../../../
