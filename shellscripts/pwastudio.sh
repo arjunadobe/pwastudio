@@ -279,6 +279,8 @@ cd src/$companyName/$templateName
 yarn add nuka-carousel
 cd ../../../
 
+yarn install
+
 echo -e "\e[1;32m"
 echo "#########################"
 echo "# Now Building your custom theme #"
